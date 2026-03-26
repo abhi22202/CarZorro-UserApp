@@ -1,0 +1,32 @@
+<!-- Add these to your AndroidManifest.xml <application> tag -->
+
+<!-- Update application name -->
+<application
+    android:name=".VendorApplication"
+    ...>
+
+    <!-- FCM Service -->
+    <service
+        android:name=".services.VendorFirebaseMessagingService"
+        android:exported="false">
+        <intent-filter>
+            <action android:name="com.google.firebase.MESSAGING_EVENT" />
+        </intent-filter>
+    </service>
+
+    <!-- FCM Notification Metadata -->
+    <meta-data
+        android:name="com.google.firebase.messaging.default_notification_icon"
+        android:resource="@drawable/ic_notification" />
+    
+    <meta-data
+        android:name="com.google.firebase.messaging.default_notification_color"
+        android:resource="@color/your_primary_color" />
+    
+    <meta-data
+        android:name="com.google.firebase.messaging.default_notification_channel_id"
+        android:value="@string/default_notification_channel_id" />
+
+</application>
+
+

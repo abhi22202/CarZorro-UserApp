@@ -1,0 +1,89 @@
+name: Build and Distribute APK to Firebase
+on:
+  push:
+    branches: [ deve-navdeep,development ]
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build-and-distribute:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Decode Keystore
+        env:
+          ENCODED_STRING: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          echo $ENCODED_STRING | base64 -d > app/release-keystore.jks
+          echo "Keystore decoded successfully"
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build release APK
+        run: |
+          if [ -f "app/release-keystore.jks" ] && [ -n "${{ secrets.KEYSTORE_PASSWORD }}" ]; then
+            echo "Building signed release APK..."
+            ./gradlew assembleRelease --stacktrace
+          else
+            echo "Building unsigned debug APK for testing..."
+            ./gradlew assembleDebug --stacktrace
+          fi
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+
+      - name: Find APK file
+        id: find_apk
+        run: |
+          APK_FILE=$(find app/build/outputs/apk/release -name "*.apk" | head -1)
+          echo "apk_path=$APK_FILE" >> $GITHUB_OUTPUT
+          echo "Found APK: $APK_FILE"
+
+      - name: Get current date and commit info
+        id: build_info
+        run: |
+          echo "date=$(date +'%Y-%m-%d %H:%M UTC')" >> $GITHUB_OUTPUT
+          echo "short_sha=${GITHUB_SHA:0:7}" >> $GITHUB_OUTPUT
+
+      - name: Upload to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID }}
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          testers: navdeep@srchoutsoftware.com,abhishek.singh0904@gmail.com,info@carzorro.com,alibha@srchoutsoftware.com,amanyadav@srchoutsoftware.com,arshdeep@srchoutsoftware.com,dsavyell031218@gmail.com,harshit@srchoutsoftware.com,nsb9569@gmail.com,uttsav@srchoutsoftware.com
+          file: ${{ steps.find_apk.outputs.apk_path }}
+          releaseNotes: |
+            New Build Available - ${{ steps.build_info.outputs.date }}
+            
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ steps.build_info.outputs.short_sha }}
+            
+            Changes:
+            ${{ github.event.head_commit.message }}
+            
+            Installation: Enable "Install from Unknown Sources" in Android settings

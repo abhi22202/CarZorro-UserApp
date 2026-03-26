@@ -1,0 +1,17 @@
+# Android
+.gradle/
+build/
+local.properties
+.idea/
+*.iml
+
+# Keystore (VERY IMPORTANT)
+*.jks
+*.keystore
+keystore-base64.txt
+
+# Firebase
+google-services.json
+
+# Logs
+*.log
