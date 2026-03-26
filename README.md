@@ -3,9 +3,14 @@
 CarZorro is a modern Android application that allows users to seamlessly book car services, track their requests, and receive real-time updates.
 This app is part of a full-stack ecosystem that includes a vendor app and a Laravel-based backend hosted on AWS.
 
+---
+
 ## 📱 Overview
+
 The CarZorro User App is designed with scalability, clean architecture, and modern Android development practices.
 It provides a smooth and intuitive experience for users to manage their car service needs.
+
+---
 
 ## ✨ Features
 
@@ -71,13 +76,15 @@ The app follows a clean and scalable architecture:
 
 ```
 app/
- ├── ui/                # Screens (Compose UI)
- ├── viewmodel/         # ViewModels
- ├── repository/        # Data handling
- ├── network/           # API services
- ├── di/                # Dependency Injection (Hilt)
- └── utils/             # Helper classes
+ ├── ui/                
+ ├── viewmodel/         
+ ├── repository/        
+ ├── network/           
+ ├── di/                
+ └── utils/             
+```
 
+---
 
 ## ⚙️ Setup Instructions
 
@@ -93,9 +100,7 @@ app/
 
    * Place `google-services.json` in `/app` folder
 
-4. Configure API base URL:
-
-   * Update constants or config file
+4. Configure API base URL
 
 5. Run the app 🚀
 
@@ -115,9 +120,9 @@ app/
 ## 🚀 Future Improvements
 
 * 💳 Payment Integration
-* 📍 Real-time service tracking (maps)
+* 📍 Real-time service tracking
 * ⭐ Ratings & Reviews system
-* 📊 Analytics dashboard
+* 📊 Analytics integration
 
 ---
 
@@ -131,8 +136,7 @@ This project is currently maintained by the author. Contributions and suggestion
 
 **Abhishek Singh**
 
-* Android Developer (Kotlin | Jetpack Compose)
-* Interested in building scalable mobile applications
+Android Developer | Kotlin | Jetpack Compose
 
 ---
 
